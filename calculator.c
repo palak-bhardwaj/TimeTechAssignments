@@ -34,10 +34,12 @@ int eval(char s[], int *err) {
                 i++;
             }
             nums[n++] = val;
-        } else if (isOp(s[i])) {
+        } 
+        else if (isOp(s[i])) {
             ops[o++] = s[i];
             i++;
-        } else {
+        } 
+        else {
             *err = 1;
             return 0;
         }

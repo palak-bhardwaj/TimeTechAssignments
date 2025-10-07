@@ -25,7 +25,10 @@ int get_next_id() {
 
 void add_user() {
     FILE *file = fopen(FILENAME, "a");
-    if (!file) { printf("Cannot open file.\n"); return; }
+    if (!file) { 
+        printf("Cannot open file.\n"); 
+        return; 
+    }
 
     User u;
     u.id = get_next_id();
@@ -41,7 +44,9 @@ void add_user() {
 
 void read_users() {
     FILE *file = fopen(FILENAME, "r");
-    if (!file) { printf("No users found.\n"); return; }
+    if (!file) { printf("No users found.\n"); 
+        return; 
+    }
 
     User u;
     while (fscanf(file, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3)
@@ -92,7 +97,9 @@ void delete_user() {
     }
 
     fclose(orig); fclose(temp);
-    if (found) { remove(FILENAME); rename(TEMP_FILENAME, FILENAME); printf("Deleted.\n"); }
+    if (found) { remove(FILENAME); 
+        rename(TEMP_FILENAME, FILENAME); 
+        printf("Deleted.\n"); }
     else remove(TEMP_FILENAME);
 }
 
@@ -100,7 +107,11 @@ int main() {
     int choice;
     do {
         printf("\n1. Add\n2. Show\n3. Update\n4. Delete\n0. Exit\nChoice: ");
-        if (scanf("%d", &choice) != 1) { while(getchar()!='\n'); choice=-1; continue; }
+        if (scanf("%d", &choice) != 1) { 
+            while(getchar()!='\n'); 
+            choice=-1; 
+            continue; 
+        }
         switch(choice){
             case 1: add_user(); break;
             case 2: read_users(); break;
