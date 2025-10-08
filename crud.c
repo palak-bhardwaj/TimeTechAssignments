@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define MAX_NAME 50
 #define FILENAME "users.txt"
@@ -12,26 +13,32 @@ typedef struct {
     int age;
 } User;
 
-int get_next_id() {
+int getNextId() {
     FILE *file = fopen(FILENAME, "r");
-    if (!file) return 1;
-    int max_id = 0;
+    if (!file) {
+        return 1;
+    }
+
+    int maxId = 0;
     User u;
-    while (fscanf(file, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3)
-        if (u.id > max_id) max_id = u.id;
+    while (fscanf(file, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3) {
+        if (u.id > maxId) {
+            maxId = u.id;
+        }
+    }
     fclose(file);
-    return max_id + 1;
+    return maxId + 1;
 }
 
-void add_user() {
+void addUser() {
     FILE *file = fopen(FILENAME, "a");
-    if (!file) { 
-        printf("Cannot open file.\n"); 
-        return; 
+    if (!file) {
+        printf("Cannot open file.\n");
+        return;
     }
 
     User u;
-    u.id = get_next_id();
+    u.id = getNextId();
     printf("ID: %d\nName: ", u.id);
     scanf("%s", u.name);
     printf("Age: ");
@@ -42,39 +49,42 @@ void add_user() {
     printf("User added.\n");
 }
 
-void read_users() {
+void readUsers() {
     FILE *file = fopen(FILENAME, "r");
-    if (!file) { printf("No users found.\n"); 
-        return; 
+    if (!file) {
+        printf("No users found.\n");
+        return;
     }
 
     User u;
-    while (fscanf(file, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3)
+    while (fscanf(file, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3) {
         printf("ID: %d, Name: %s, Age: %d\n", u.id, u.name, u.age);
+    }
 
     fclose(file);
 }
 
-void update_user() {
+void updateUser() {
     int id;
     printf("Enter ID to update: ");
-    if (scanf("%d", &id) != 1) { 
-        while(getchar()!='\n'); 
-        return; 
+    if (scanf("%d", &id) != 1) {
+        while (getchar() != '\n');
+        return;
     }
 
     FILE *orig = fopen(FILENAME, "r");
     FILE *temp = fopen(TEMP_FILENAME, "w");
-    if (!orig || !temp) { 
-        if(orig) fclose(orig); 
-        if(temp) fclose(temp); 
-        return; 
+    if (!orig || !temp) {
+        if (orig) fclose(orig);
+        if (temp) fclose(temp);
+        return;
     }
 
-    User u; int found = 0;
+    User u;
+    bool found = false;
     while (fscanf(orig, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3) {
         if (u.id == id) {
-            found = 1;
+            found = true;
             printf("New Name: ");
             scanf("%s", u.name);
             printf("New Age: ");
@@ -83,60 +93,80 @@ void update_user() {
         fprintf(temp, "%d,%s,%d\n", u.id, u.name, u.age);
     }
 
-    fclose(orig); fclose(temp);
-    if (found) { 
-        remove(FILENAME); 
-        rename(TEMP_FILENAME, FILENAME); 
-        printf("Updated.\n"); }
-    else remove(TEMP_FILENAME);
+    fclose(orig);
+    fclose(temp);
+
+    if (found) {
+        remove(FILENAME);
+        rename(TEMP_FILENAME, FILENAME);
+        printf("Updated.\n");
+    } 
+    else {
+        remove(TEMP_FILENAME);
+    }
 }
 
-void delete_user() {
+void deleteUser() {
     int id;
     printf("Enter ID to delete: ");
-    if (scanf("%d", &id) != 1) { 
-        while(getchar()!='\n'); 
-        return; 
+    if (scanf("%d", &id) != 1) {
+        while (getchar() != '\n');
+        return;
     }
 
     FILE *orig = fopen(FILENAME, "r");
     FILE *temp = fopen(TEMP_FILENAME, "w");
-    if (!orig || !temp) { 
-        if(orig) fclose(orig); 
-        if(temp) fclose(temp); 
-        return; 
+    if (!orig || !temp) {
+        if (orig) fclose(orig);
+        if (temp) fclose(temp);
+        return;
     }
 
-    User u; int found = 0;
+    User u;
+    bool found = false;
     while (fscanf(orig, "%d,%[^,],%d\n", &u.id, u.name, &u.age) == 3) {
-        if (u.id == id) found = 1;
-        else fprintf(temp, "%d,%s,%d\n", u.id, u.name, u.age);
+        if (u.id == id) {
+            found = true;
+        } 
+        else {
+            fprintf(temp, "%d,%s,%d\n", u.id, u.name, u.age);
+        }
     }
 
-    fclose(orig); fclose(temp);
-    if (found) { remove(FILENAME); 
-        rename(TEMP_FILENAME, FILENAME); 
-        printf("Deleted.\n"); }
-    else remove(TEMP_FILENAME);
+    fclose(orig);
+    fclose(temp);
+
+    if (found) {
+        remove(FILENAME);
+        rename(TEMP_FILENAME, FILENAME);
+        printf("Deleted.\n");
+    } 
+    else {
+        remove(TEMP_FILENAME);
+    }
 }
 
-int main() {
+void crudApp() {
     int choice;
     do {
         printf("\n1. Add\n2. Show\n3. Update\n4. Delete\n0. Exit\nChoice: ");
-        if (scanf("%d", &choice) != 1) { 
-            while(getchar()!='\n'); 
-            choice=-1; 
-            continue; 
+        if (scanf("%d", &choice) != 1) {
+            while (getchar() != '\n');
+            choice = -1;
+            continue;
         }
-        switch(choice){
-            case 1: add_user(); break;
-            case 2: read_users(); break;
-            case 3: update_user(); break;
-            case 4: delete_user(); break;
+        switch (choice) {
+            case 1: addUser(); break;
+            case 2: readUsers(); break;
+            case 3: updateUser(); break;
+            case 4: deleteUser(); break;
             case 0: break;
             default: printf("Invalid.\n");
         }
-    } while(choice != 0);
+    } while (choice != 0);
+}
+
+int main() {
+    crudApp();
     return 0;
 }
