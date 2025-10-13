@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdbool.h>
 
 #define MAX_SUBJECTS 3
 #define MAX_STUDENTS 100
@@ -15,14 +16,14 @@ typedef struct {
     float marks[MAX_SUBJECTS];
 } Student;
 
-int isUniqueRollNumber(Student students[], int numberOfStudents, int rollNumber) {
+bool isUniqueRollNumber(Student students[], int numberOfStudents, int rollNumber) {
     for (int i = 0; i < numberOfStudents; i++)
         if (students[i].rollNumber == rollNumber)
-            return 0;
-    return 1;
+            return false;
+    return true;
 }
 
-int isValidMarks(float marks) {
+bool isValidMarks(float marks) {
     return marks >= 0 && marks <= 100;
 }
 
